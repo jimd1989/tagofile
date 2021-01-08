@@ -1,0 +1,68 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.33.0.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 523462a20bf409b85f0efc664a21deda14d6b0577c793b8399c5d410f31e8fcf
+
+name:           tagofile
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/githubuser/tagofile#readme>
+homepage:       https://github.com/githubuser/tagofile#readme
+bug-reports:    https://github.com/githubuser/tagofile/issues
+author:         Author name here
+maintainer:     example@example.com
+copyright:      2021 Author name here
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    ChangeLog.md
+
+source-repository head
+  type: git
+  location: https://github.com/githubuser/tagofile
+
+library
+  exposed-modules:
+      Args
+      Helpers
+  other-modules:
+      Paths_tagofile
+  default-extensions: DeriveGeneric NamedFieldPuns OverloadedStrings RecordWildCards TupleSections UnicodeSyntax
+  hs-source-dirs:
+      src
+  build-depends:
+      base >=4.7 && <5
+    , containers
+  default-language: Haskell2010
+
+executable tagofile-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_tagofile
+  default-extensions:
+      UnicodeSyntax
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , tagofile
+    , containers
+  default-language: Haskell2010
+
+test-suite tagofile-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_tagofile
+  hs-source-dirs:
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , tagofile
+  default-language: Haskell2010
