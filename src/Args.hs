@@ -1,10 +1,11 @@
-module Args (parseArgs) where
+module Args (ParsedArgs, parseArgs) where
 
 import Control.Arrow ((|||))
 import Data.Function ((&), const)
 import Data.Functor (($>))
 import Data.Map as M
-import Helpers ((◇), note)
+import Data.Tuple (swap)
+import Helpers ((⊙), (◁), (◇), note, tail')
 import System.Environment (getArgs)
 import System.IO.Error (userError)
 
@@ -26,23 +27,16 @@ isArg ('-' : ω)  = True
 isArg α          = False
 
 data ParsedArgs = ParsedArgs {
-  album ∷ ArgVal,
-  artist ∷ ArgVal,
-  albumArtist ∷ ArgVal,
-  genre ∷ ArgVal,
-  year ∷ ArgVal,
+  tags ∷ GlobalTags,
   format ∷ ArgVal,
   files ∷ [ArgVal]
 } deriving Show
 
+noDashes ∷ GlobalTags → Maybe GlobalTags
+noDashes = (M.fromList . (⊙) swap) ◁ mapM (sequence . tail' ◁ swap) . M.toList
+
 parsedArgs ∷ ArgVal → [ArgVal] → GlobalTags → Maybe ParsedArgs
-parsedArgs format files gt = do
-  album       ← M.lookup "-A" gt
-  artist      ← M.lookup "-a" gt
-  albumArtist ← M.lookup "-b" gt
-  genre       ← M.lookup "-G" gt
-  year        ← M.lookup "-Y" gt
-  return ParsedArgs {album, artist, albumArtist, genre, year, format, files}
+parsedArgs format files = (\tags → ParsedArgs {tags, format, files}) ◁ noDashes
 
 parse ∷ Args → GlobalTags → Either String ParsedArgs
 parse [] gt = Left "no format string / files specified"

@@ -28,10 +28,11 @@ source-repository head
 library
   exposed-modules:
       Args
+      Format
       Helpers
   other-modules:
       Paths_tagofile
-  default-extensions: DeriveGeneric NamedFieldPuns OverloadedStrings RecordWildCards TupleSections UnicodeSyntax
+  default-extensions: DeriveGeneric FlexibleContexts NamedFieldPuns OverloadedStrings RecordWildCards TupleSections UnicodeSyntax
   hs-source-dirs:
       src
   build-depends:
