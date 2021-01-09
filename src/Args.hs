@@ -1,17 +1,15 @@
-module Args (ParsedArgs, parseArgs) where
+module Args (ParsedArgs, parseArgs, fmt) where
 
 -- Concerned with parsing command line arguments into a struct ParsedArgs,
 -- which contains any global tag values for artist, genre, etc, as well
 -- as the format string and files to be tagged.
 
-import Control.Arrow ((|||))
 import Data.Function ((&), const)
 import Data.Functor (($>))
 import Data.Map as M (Map, adjust, fromList, lookup, toList)
 import Data.Tuple (swap)
-import Helpers ((⊙), (◁), (◇), note, tail')
+import Helpers ((⊙), (◁), (◇), note, tail', toIO)
 import System.Environment (getArgs)
-import System.IO.Error (userError)
 
 type Arg = String
 type Args = [String]
@@ -32,22 +30,23 @@ isArg α          = False
 
 data ParsedArgs = ParsedArgs {
   tags ∷ GlobalTags,
-  format ∷ ArgVal,
+  fmt ∷ ArgVal,
   files ∷ [ArgVal]
 } deriving Show
 
-noDashes ∷ GlobalTags → Maybe GlobalTags
-noDashes = (fromList . (⊙) swap) ◁ mapM (sequence . tail' ◁ swap) . toList
+noDash ∷ GlobalTags → Maybe GlobalTags
+noDash = (fromList . (⊙) swap) ◁ mapM (sequence . tail' ◁ swap) . toList
 
 parsedArgs ∷ ArgVal → [ArgVal] → GlobalTags → Maybe ParsedArgs
-parsedArgs format files = (\tags → ParsedArgs {tags, format, files}) ◁ noDashes
+parsedArgs fmt files = (\tags → ParsedArgs {tags, fmt, files}) ◁ noDash
 
 parse ∷ Args → GlobalTags → Either String ParsedArgs
-parse [] gt             = Left "no format string / files specified"
+parse [] gt             = Left "no _format string / files specified"
 parse (α : β : ω) gt
   | isArg α && isArg β  = Left $ α ◇ " needs value"
   | isArg α             = set α β gt >>= parse ω
   | otherwise           = note "internal error" $ parsedArgs α (β : ω) gt
+parse _ _               = Left "malformed arguments"
 
 parseArgs ∷ IO ParsedArgs
-parseArgs = (ioError . userError ||| pure) . flip parse globalTags =<< getArgs
+parseArgs = toIO . flip parse globalTags =<< getArgs

@@ -1,6 +1,7 @@
 module Main where
 
-import Args (parseArgs)
+import Args (fmt, parseArgs)
+import Format (format)
 
 main ∷ IO ()
-main = parseArgs >> return ()
+main =  putStrLn . show =<< format . fmt =<< parseArgs
