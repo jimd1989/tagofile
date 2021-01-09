@@ -1,7 +1,9 @@
 module Helpers where
 
+import Control.Arrow ((|||))
 import Control.Monad ((<=<))
 import Data.Functor (($>))
+import System.IO.Error (userError)
 
 head' ∷ [a] → Maybe a
 head' []      = Nothing
@@ -14,6 +16,9 @@ note ∷ a → Maybe b → Either a b
 note α Nothing  = Left α
 note _ (Just β) = Right β
 
+toIO ∷ Either String a → IO a
+toIO = ioError . userError ||| pure
+
 g ◁ f = (<$>) g . f
 infixr 9 ◁
 
@@ -22,6 +27,9 @@ infixr 1 ◀
 
 f ⊙ m = f <$> m
 infixl 4 ⊙
+
+f ● m = f <*> m
+infixl 4 ●
 
 α ◇ ω = α <> ω
 infixr 5 ◇
