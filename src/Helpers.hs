@@ -2,7 +2,7 @@ module Helpers where
 
 import Control.Arrow ((|||))
 import Control.Monad ((<=<))
-import Data.Functor (($>))
+import Data.Functor (($>), (<&>))
 import System.IO.Error (userError)
 
 head' ∷ [a] → Maybe a
@@ -27,6 +27,9 @@ infixr 1 ◀
 
 f ⊙ m = f <$> m
 infixl 4 ⊙
+
+m ⊖ f = m <&> f
+infixl 1 ⊖
 
 f ● m = f <*> m
 infixl 4 ●
