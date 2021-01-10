@@ -1,4 +1,4 @@
-module Format (Format, Matcher, format) where
+module Format (Format, format) where
 
 -- Concerned with reading the format' string into an array of Matcher types,
 -- which tell the program what type of input to expect from the filenames,
@@ -23,12 +23,12 @@ add (Txt α) ω = Txt $ α ◇ ω
 add α _       = α
 
 format' ∷ [Matcher] → Matcher → String → Format
-format' ms m []                 = ms ◆ m
-format' ms m ('{' : α : '}' : ω)
-  | member α formats && isNum α = format' (ms ◆ m) (num α ω) ω
-  | member α formats            = format' (ms ◆ m) (until' α ω) ω
-  | isTxt m                     = format' ms (add m $ "{" ◇ [α] ◇ "}") ω
-  | otherwise                   = format' (ms ◆ m) (txt α) ω
+format' ms m []                        = ms ◆ m
+format' ms m ('{' : α : '}' : β : ω)
+  | member α formats && isNum α = format' (ms ◆ m) (num α (β : ω)) ω
+  | member α formats            = format' (ms ◆ m) (until' α (β : ω)) ω
+  | isTxt m                     = format' ms (add m $ "{" ◇ [α] ◇ "}") (β : ω)
+  | otherwise                   = format' (ms ◆ m) (txt α) (β : ω)
 format' ms m (α : ω)
   | isTxt m                     = format' ms (add m [α]) ω
   | otherwise                   = format' (ms ◆ m) (txt α) ω
