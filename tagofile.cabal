@@ -30,6 +30,7 @@ library
       Args
       Format
       Helpers
+      Match
   other-modules:
       Paths_tagofile
   default-extensions: DeriveGeneric FlexibleContexts NamedFieldPuns OverloadedStrings RecordWildCards TupleSections UnicodeSyntax

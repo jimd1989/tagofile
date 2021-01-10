@@ -8,7 +8,7 @@ import Data.Function ((&), const)
 import Data.Functor (($>))
 import Data.Map as M (Map, adjust, fromList, lookup, toList)
 import Data.Tuple (swap)
-import Helpers ((⊙), (◁), (◇), note, tail', toIO)
+import Helpers ((⊙), (◁), (◇), (◆), note, tail', toIO)
 import System.Environment (getArgs)
 
 type Arg = String
