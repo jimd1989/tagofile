@@ -1,7 +1,13 @@
 module Main where
 
-import Args (fmt, parseArgs)
+import Args (files, fmt, parseArgs, tags)
 import Format (format)
+import Helpers ((⊙))
+import Match (match)
 
 main ∷ IO ()
-main =  putStrLn . show =<< format . fmt =<< parseArgs
+main = do
+  args        ← parseArgs
+  fileFormat  ← format $ fmt args
+  parsedFiles ← pure $ match fileFormat ⊙ (files args)
+  mapM_ (putStrLn . show) parsedFiles

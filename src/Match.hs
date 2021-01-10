@@ -1,7 +1,13 @@
-module Match where
+module Match (Matched, Matcher(..), match, isTxt, num, txt, until') where
+
+-- A Matcher is a delimited field of a given filename with instance-specific
+-- rules, such as matching literal text, numbers, or arbitrary text up until
+-- a delimiter. This module is concerned with providing Matcher constructors
+-- used in the Format module, as well as matching a format string against
+-- filenames using these Matcher rules. The final output of a matching attempt
+-- is a Matched type, which is a Map of all parsed fields and their values.
 
 import Control.Arrow ((***))
-import Data.Char (isDigit)
 import Data.Functor (($>))
 import Data.Map as M (Map, fromList, insert)
 import Helpers ((◆), (⊖))
@@ -23,7 +29,7 @@ txt α = Txt [α]
 
 isTxt ∷ Matcher → Bool
 isTxt (Txt _) = True
-isTxt _           = False
+isTxt _       = False
 
 numStr ∷ String → Maybe String
 numStr α = (readMaybe α ∷ Maybe Int) $> α
@@ -75,6 +81,10 @@ match' m (Txt α) β       = matchTxt α β ⊖ (,m)
 match' m (Num t d) β     = matchNum d (β, []) ⊖ (id *** add m t)
 match' m (Until t d n) β = matchUntil d (total d n β) (β, []) ⊖ (id *** add m t)
 
-match ∷ [Matcher] → (String, Matched) → Maybe Matched
-match [] ([], m)     = Just m
-match (α : ω) (s, m) = match' m α s >>= match ω
+matchFormat ∷ [Matcher] → (String, Matched) → Maybe Matched
+matchFormat [] ([], m)     = Just m
+matchFormat (α : ω) (s, m) = match' m α s >>= matchFormat ω
+matchFormat _ _            = Nothing
+
+match ∷ [Matcher] → String → Maybe Matched
+match ms = matchFormat ms . (,fromList [])

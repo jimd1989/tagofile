@@ -1,6 +1,6 @@
 module Format (Format, format) where
 
--- Concerned with reading the format' string into an array of Matcher types,
+-- Concerned with reading the format string into an array of Matcher types,
 -- which tell the program what type of input to expect from the filenames,
 -- what delimiters to look out for, etc.
 --

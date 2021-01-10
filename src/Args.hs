@@ -1,4 +1,4 @@
-module Args (ParsedArgs, parseArgs, fmt) where
+module Args (ParsedArgs, files, fmt, parseArgs, tags) where
 
 -- Concerned with parsing command line arguments into a struct ParsedArgs,
 -- which contains any global tag values for artist, genre, etc, as well
@@ -8,7 +8,7 @@ import Data.Function ((&), const)
 import Data.Functor (($>))
 import Data.Map as M (Map, adjust, fromList, lookup, toList)
 import Data.Tuple (swap)
-import Helpers ((⊙), (◁), (◇), (◆), note, tail', toIO)
+import Helpers ((⊙), (◁), (◇), note, tail', toIO)
 import System.Environment (getArgs)
 
 type Arg = String
