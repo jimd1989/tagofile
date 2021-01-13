@@ -3,35 +3,37 @@ module Format (Format, format) where
 -- Concerned with reading the format string into an array of Matcher types,
 -- which tell the program what type of input to expect from the filenames,
 -- what delimiters to look out for, etc.
---
--- I am not concerned with performance and am just appending to lists. Deal.
 
 import Data.Set as S (Set, fromList, member)
-import Helpers ((⊙), (◇), (◆), note, tail', toIO)
-import Match (Matcher(..), isTxt, num, txt, until')
+import Helpers ((◇), note, tail', toIO)
+import Matchers (Matcher(..))
 
 type Format = [Matcher]
 
-formats ∷ Set Char
-formats = fromList "ndtaAbYG"
+fields ∷ Set Char
+fields = fromList "taAbG"
 
-isNum ∷ Char → Bool
-isNum α = or $ (α ==) ⊙ ['n', 'd']
+numFields ∷ Set Char
+numFields = fromList "ndY"
 
-add ∷ Matcher → String → Matcher
-add (Txt α) ω = Txt $ α ◇ ω
-add α _       = α
+isTxt ∷ Matcher → Bool
+isTxt (Txt _) = True
+isTxt _       = False
+
+txtAdd ∷ Matcher → String → Matcher
+txtAdd (Txt α) ω = Txt $ α ◇ ω
+txtAdd α _       = α
 
 format' ∷ [Matcher] → Matcher → String → Format
-format' ms m []                        = ms ◆ m
-format' ms m ('{' : α : '}' : β : ω)
-  | member α formats && isNum α = format' (ms ◆ m) (num α (β : ω)) ω
-  | member α formats            = format' (ms ◆ m) (until' α (β : ω)) ω
-  | isTxt m                     = format' ms (add m $ "{" ◇ [α] ◇ "}") (β : ω)
-  | otherwise                   = format' (ms ◆ m) (txt α) (β : ω)
+format' ms m []        = reverse (m : ms)
+format' ms m ('{' : α : '}' : ω)
+  | member α numFields = format' (m : ms) (Num $ pure α) ω 
+  | member α fields    = format' (m : ms) (Field $ pure α) ω
+  | isTxt m            = format' ms (txtAdd m $ "{" ◇ [α] ◇ "}") ω
+  | otherwise          = format' (m : ms) (Txt $ pure α) ω
 format' ms m (α : ω)
-  | isTxt m                     = format' ms (add m [α]) ω
-  | otherwise                   = format' (ms ◆ m) (txt α) ω
+  | isTxt m            = format' ms (txtAdd m $ pure α) ω
+  | otherwise          = format' (m : ms) (Txt $ pure α) ω
 
 format ∷ String → IO Format
 format = toIO . note "internal error" . tail' . format' [] Blank
