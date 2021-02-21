@@ -17,7 +17,7 @@ type ArgVal = String
 type GlobalTags = Map Arg ArgVal
 
 globalTags ∷ GlobalTags
-globalTags = fromList [("-a", ""),("-A", ""),("-b", ""),("-G", ""),("-Y", "")]
+globalTags = fromList $ (,"") ⊙ ["-a", "-A", "-b", "-G", "-Y"]
 
 set ∷ Arg → ArgVal → GlobalTags → Either String GlobalTags
 set k v gt = M.lookup k gt $> adjust (const v) k gt & note (err k)

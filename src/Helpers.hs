@@ -1,7 +1,8 @@
 module Helpers where
 
 import Control.Arrow ((|||))
-import Control.Monad ((<=<))
+import Control.Monad ((<=<), liftM2)
+import Data.Bitraversable (bisequence)
 import Data.Functor (($>), (<&>))
 import System.IO.Error (userError)
 
@@ -11,6 +12,18 @@ head' (α : ω) = Just α
 
 tail' ∷ [a] → Maybe [a]
 tail' α = head' α $> tail α
+
+drop' ∷ Int → [a] → Maybe [a]
+drop' n = tail' . drop (pred n)
+
+take' ∷ Int → [a] → Maybe [a]
+take' n = liftM2 ($>) (drop' n) (take n)
+
+slice ∷ Int → [a] → Maybe ([a], [a])
+slice n = bisequence . liftM2 (,) (take' n) (drop' n)
+
+flip2 ∷ (a → b → c → d) → (a → c → b → d)
+flip2 f α = (flip $ f α)
 
 note ∷ a → Maybe b → Either a b
 note α Nothing  = Left α
